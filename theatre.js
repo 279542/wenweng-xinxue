@@ -17,6 +17,7 @@ function choice(a,prompt,items){a.dialog.hidden=true;clearFocus(a);a.options.hid
 function interact(a,prompt,html,setup){a.dialog.hidden=true;clearFocus(a);a.hint.textContent=prompt;a.hint.classList.add('visible');a.props.innerHTML=html;return new Promise(resolve=>setup(a.props,()=>{a.hint.classList.remove('visible');a.props.innerHTML='';resolve()}))}
 async function fade(a){let f=a.el.querySelector('.act-transition');f.classList.add('on');await wait(420)}
 async function actTwo({layer,showFacts,render}){
+ await window.WenwengAssets.ensure('bg-street.webp');window.WenwengAssets.warm('bg-office-v1.webp');window.WenwengAssets.warm('props-atlas-v1.webp');
  let a=create(layer,'第二幕 · 名额之问','street',['horse','wenweng','merchant'],showFacts);
  await say(a,'旁白','正说着，一位乡绅走上前，拿出一张价签。');
  await say(a,'乡绅 · 虚构人物','这求学的机会，要是按出价安排，岂不是能多收些钱？',{speaker:'merchant'});
@@ -32,6 +33,7 @@ async function actTwo({layer,showFacts,render}){
  await fade(a);await actThree({layer,showFacts,render});
 }
 async function actThree({layer,showFacts,render}){
+ await window.WenwengAssets.ensure('bg-office-v1.webp');await window.WenwengAssets.ensure('props-atlas-v1.webp');window.WenwengAssets.warm('bg-road-v1.webp');
  let a=create(layer,'第三幕 · 节用送学','office',['horse','wenweng'],showFacts);
  await say(a,'旁白','郡府案上，摊着用度记录与送学的行装。');
  await interact(a,'轻触案上的文书',`<button class="act-ledger" type="button" aria-label="查看少府用度文书"><span class="prop-sprite slips"></span><span class="act-prop-label">查看文书</span></button>`,(host,done)=>{host.querySelector('button').onclick=()=>done()});
@@ -40,17 +42,18 @@ async function actThree({layer,showFacts,render}){
  await say(a,'小马翁','这些东西，要送到哪里？先把它们装好吧。',{speaker:'horse'});
  await interact(a,'点蜀刀和蜀布，放入包裹（顺序不限）',`<div class="packing-board"><div class="packing-parcel"><span class="prop-sprite parcel"></span><b>送学行装</b></div><button class="packing-item cloth" type="button" data-item="cloth" aria-label="把蜀布放入包裹"><span class="prop-sprite fabric"></span><b>蜀布</b></button><button class="packing-item sword" type="button" data-item="knife" aria-label="把蜀刀放入包裹"><span class="prop-sprite blade"></span><b>蜀刀</b></button><p class="packing-count" aria-live="polite">已装入 0 / 2</p><button class="packing-done" type="button" hidden>查看包裹去向 →</button></div>`,(host,done)=>{const selected=new Set(),count=host.querySelector('.packing-count'),finish=host.querySelector('.packing-done');host.querySelectorAll('[data-item]').forEach(b=>b.onclick=()=>{selected.add(b.dataset.item);b.disabled=true;b.classList.add('packed');count.textContent=`已装入 ${selected.size} / 2`;if(selected.size===2){count.textContent='行装已备好';finish.hidden=false}});finish.onclick=()=>done()});
  await say(a,'旁白','包裹上写着：送往京师博士。蜀刀、蜀布并非学生交给文翁的学费。');
- await fade(a);let road=create(layer,'第三幕 · 赴京求学','road',['horse','scholar'],showFacts);
+ await window.WenwengAssets.ensure('bg-road-v1.webp');await fade(a);let road=create(layer,'第三幕 · 赴京求学','road',['horse','scholar'],showFacts);
  await say(road,'旁白','蜀地的学习者带着行装，踏上了前往京师的路。');
  await interact(road,'轻触道路，送他们启程',`<button class="road-depart" type="button">送他们出发 <span>→</span></button>`,(host,done)=>{host.querySelector('button').onclick=async()=>{host.innerHTML='';road.el.classList.add('departing');await wait(2200);done()}});
  await say(road,'小马翁','原来读书，不只是找一条最快的路。',{speaker:'horse'});
  await fade(road);render('gameIntro');
 }
 async function actFive({layer,showFacts,render}){
+ await window.WenwengAssets.ensure('bg-road-v1.webp');window.WenwengAssets.warm('bg-classroom.webp');
  let a=create(layer,'第五幕 · 学成归来','road',['horse','scholar'],showFacts);a.el.classList.add('returning');
  await say(a,'旁白','数年后，赴京学习的蜀地小吏学成归来。');
  await say(a,'旁白','文翁任用其中一些人，并依次考察推举。');
- await fade(a);let b=create(layer,'第五幕 · 石室兴学','academy',['horse','wenweng','student'],showFacts);
+ await window.WenwengAssets.ensure('bg-classroom.webp');await fade(a);let b=create(layer,'第五幕 · 石室兴学','academy',['horse','wenweng','student'],showFacts);
  await say(b,'旁白','后来，文翁在成都兴办学官，招收所属县的子弟，并免除他们的更徭。');
  await interact(b,'轻触学堂门前的竹简',`<button class="academy-scroll" type="button" aria-label="查看学官学生的故事"><span class="prop-sprite slips"></span><b>查看竹简</b></button>`,(host,done)=>{host.querySelector('button').onclick=()=>done()});
  await say(b,'旁白','文翁选择明经、品行端正的学官学生随行，让他们传达教令。');

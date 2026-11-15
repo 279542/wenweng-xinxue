@@ -188,6 +188,8 @@ async function cover(){
   const btn=$('#btnStart'),ld=$('#loader');
   btn.disabled=false;ld.classList.add('done');
   await tapOn(btn);Snd.init();Snd.play('motif');
+  await window.WenwengAssets.ensure('bg-study.webp');
+  window.WenwengAssets.warm('bg-enrollment-v2.webp');
   const cv=$('#cover');
   await anim(cv,[{opacity:1,transform:'scale(1)'},{opacity:0,transform:'scale(1.06)'}],{duration:900,easing:'ease-in'});
   cv.hidden=true;
@@ -254,6 +256,8 @@ async function playShot(n){
 
 // 三个连续的回忆镜头：角色和环境保留在画面里，虚构经历只作为故事引子。
 async function playSevenDayMemory(){
+  await window.WenwengAssets.ensure('bg-enrollment-v2.webp');
+  window.WenwengAssets.warm('bg-classroom-v2.webp');
   const scene=document.createElement('section');scene.className='memory-seven';
   scene.setAttribute('aria-label','七日速成的虚构回忆');
   scene.innerHTML=`<div class="memory-bg"></div><div class="memory-shade"></div>
@@ -272,6 +276,7 @@ async function playSevenDayMemory(){
   ];
   mark('shot-1');
   for(let i=0;i<steps.length;i++){
+    if(i===1)await window.WenwengAssets.ensure('bg-classroom-v2.webp');
     scene.dataset.part=String(i);text.textContent=steps[i][0];btn.textContent=steps[i][1];
     if(i===2){horse.src='assets/xm-orange-sad.webp';Snd.play('low')}
     await tapOn(btn);
@@ -315,6 +320,7 @@ async function prologue(){
 }
 
 async function rebirth(){
+  await window.WenwengAssets.ensure('bg-street.webp');
   mark('rebirth');Snd.play('flash');
   const fl=$('#flash');
   await anim(fl,[{opacity:0},{opacity:.85}],{duration:260,easing:'ease-out'});
