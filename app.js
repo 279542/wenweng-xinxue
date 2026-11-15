@@ -18,7 +18,8 @@ function anim(el,kf,o={}){
 }
 
 /* —— 声音：全部由 WebAudio 合成，无外部音频文件 —— */
-const Snd={ctx:null,master:null,on:localStorage.getItem('wx-sound')!=='off',
+const soundPreference=()=>{try{return localStorage.getItem('wx-sound')!=='off'}catch(_){return true}};
+const Snd={ctx:null,master:null,on:soundPreference(),
   init(){if(this.ctx){this.ctx.resume&&this.ctx.resume();return}
     const C=window.AudioContext||window.webkitAudioContext;if(!C)return;
     try{this.ctx=new C();this.master=this.ctx.createGain();this.master.gain.value=.7;this.master.connect(this.ctx.destination)}catch(_){}},
@@ -49,7 +50,7 @@ const Snd={ctx:null,master:null,on:localStorage.getItem('wx-sound')!=='off',
 };
 const btnSound=$('#btnSound');
 const syncSoundBtn=()=>btnSound.classList.toggle('off',!Snd.on);syncSoundBtn();
-btnSound.addEventListener('click',e=>{e.stopPropagation();Snd.on=!Snd.on;localStorage.setItem('wx-sound',Snd.on?'on':'off');syncSoundBtn();Snd.init();Snd.play('tap')});
+btnSound.addEventListener('click',e=>{e.stopPropagation();Snd.on=!Snd.on;try{localStorage.setItem('wx-sound',Snd.on?'on':'off')}catch(_){}syncSoundBtn();Snd.init();Snd.play('tap')});
 
 /* —— 世界坐标与镜头 —— */
 const IMG_W=940,IMG_H=1670;
@@ -164,7 +165,7 @@ $('#factsClose').addEventListener('click',e=>{e.stopPropagation();facts.hidden=t
 facts.addEventListener('click',e=>{e.stopPropagation();if(e.target===facts)facts.hidden=true});
 
 /* —— 资源预载 —— */
-const ASSETS=['bg-study.webp','bg-street.webp','xm-orange-idle.png','xm-orange-thinking.png','xm-orange-sad.png',...Array.from({length:6},(_,i)=>`xm-orange-walk-${String(i+1).padStart(2,'0')}.png`),'passer-a.webp','passer-b.webp','passer-c.webp','wenweng.webp'];
+const ASSETS=['bg-study.webp','bg-street.webp','xm-orange-idle.webp','xm-orange-thinking.webp','xm-orange-sad.webp',...Array.from({length:6},(_,i)=>`xm-orange-walk-${String(i+1).padStart(2,'0')}.webp`),'passer-a.webp','passer-b.webp','passer-c.webp','wenweng.webp'];
 function preload(onp){
   let n=0;return Promise.all(ASSETS.map(f=>new Promise(r=>{const i=new Image();i.onload=i.onerror=()=>{onp(++n/ASSETS.length);(i.decode?i.decode().catch(()=>{}):Promise.resolve()).then(r)};i.src='assets/'+f})));
 }
@@ -184,9 +185,8 @@ function buildCover(){
 
 async function cover(){
   mark('cover');buildCover();
-  const btn=$('#btnStart'),ld=$('#loader');btn.disabled=true;
-  await preload(p=>{ld.firstElementChild.style.width=(p*100)+'%'});
-  ld.classList.add('done');btn.disabled=false;
+  const btn=$('#btnStart'),ld=$('#loader');
+  btn.disabled=false;ld.classList.add('done');
   await tapOn(btn);Snd.init();Snd.play('motif');
   const cv=$('#cover');
   await anim(cv,[{opacity:1,transform:'scale(1)'},{opacity:0,transform:'scale(1.06)'}],{duration:900,easing:'ease-in'});
@@ -261,7 +261,7 @@ async function playSevenDayMemory(){
     <div class="memory-poster"><b>七日速成</b><span>名师亲授 · 限时报名</span></div>
     <div class="memory-days">课程进行中<br><b>第一天 → 第六天</b></div>
     <div class="memory-notice"><b>停课告示</b><span>第七天，课堂空了。<br>承诺没有兑现。</span></div>
-    <img class="memory-horse" src="assets/xm-orange-idle.png" alt="小马翁">
+    <img class="memory-horse" src="assets/xm-orange-idle.webp" alt="小马翁">
     <div class="memory-dialog"><small>小马翁 · 回忆</small><p></p><button type="button"></button></div>`;
   stage.appendChild(scene);
   const text=scene.querySelector('.memory-dialog p'),btn=scene.querySelector('button'),horse=scene.querySelector('.memory-horse');
@@ -273,7 +273,7 @@ async function playSevenDayMemory(){
   mark('shot-1');
   for(let i=0;i<steps.length;i++){
     scene.dataset.part=String(i);text.textContent=steps[i][0];btn.textContent=steps[i][1];
-    if(i===2){horse.src='assets/xm-orange-sad.png';Snd.play('low')}
+    if(i===2){horse.src='assets/xm-orange-sad.webp';Snd.play('low')}
     await tapOn(btn);
     if(i<2){Snd.play('page');await sleep(220)}
   }
@@ -302,7 +302,7 @@ async function prologue(){
     await sleep(500);
   }
   mark('regret');
-  xmPast.querySelector('img').src='assets/xm-orange-sad.png';
+  xmPast.querySelector('img').src='assets/xm-orange-sad.webp';
   xmPast.animate([{transform:'translateX(-50%) rotate(0)'},{transform:'translateX(-50%) rotate(4deg) translateY(2%)'}],{duration:T(1200),fill:'forwards',easing:'ease-out'});
   Snd.play('low');
   await say('小马翁','钱花了不少，路怎么越走越绕？');
@@ -395,23 +395,23 @@ async function street(){
     {k:'b',label:'上前了解',sub:'走到门前，问个明白',badge:'乙',cls:'main'}]);
   if(k==='a'){
     mark('choice-a');Snd.play('low');
-    xm.querySelector('.xm-still').src='assets/xm-orange-thinking.png';
+    xm.querySelector('.xm-still').src='assets/xm-orange-thinking.webp';
     stage.classList.add('greyed');xm.classList.add('ghosting');[pA,pB,pC].forEach(p=>p.classList.add('dim'));
     await say('','小马翁跟着说了几句，越说越像上一世——只凭几句传言，就想下结论。',{narr:true});
     xm.classList.add('shake');setTimeout(()=>xm.classList.remove('shake'),500);
     await say('小马翁','等等，我连门都没进，听到的都只是半句话。');
     await hideDialog();
-    xm.querySelector('.xm-still').src='assets/xm-orange-idle.png';
+    xm.querySelector('.xm-still').src='assets/xm-orange-idle.webp';
     stage.classList.remove('greyed');xm.classList.remove('ghosting');[pA,pB,pC].forEach(p=>p.classList.remove('dim'));
     await sleep(500);
     k=await choose('换个做法',[{k:'b',label:'上前了解',cls:'main single'}]);
   }
   mark('choice-b');setProgress(84);
-  xm.querySelector('.xm-still').src='assets/xm-orange-thinking.png';
+  xm.querySelector('.xm-still').src='assets/xm-orange-thinking.webp';
   xm.classList.add('hop');setTimeout(()=>xm.classList.remove('hop'),600);
   await say('小马翁','这次我先不急着下结论，问明白再说。');
   await hideDialog();
-  xm.querySelector('.xm-still').src='assets/xm-orange-idle.png';
+  xm.querySelector('.xm-still').src='assets/xm-orange-idle.webp';
   // 路人让开
   Snd.play('whoosh');
   await Promise.all([
