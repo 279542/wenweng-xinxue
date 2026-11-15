@@ -1,0 +1,181 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<meta name="theme-color" content="#211812">
+<title>码上清廉 · 文翁新学录｜开场：石室门前</title>
+<link rel="preload" as="image" href="assets/bg-study.webp">
+<link rel="preload" as="image" href="assets/bg-street.webp">
+<link rel="stylesheet" href="style.css?v=visualreview2">
+</head>
+<body>
+<div id="app" class="app">
+  <div id="stage" class="stage" data-scene="cover">
+
+    <!-- 世界层：背景和角色都按背景图坐标（百分比）摆放 -->
+    <div id="cam" class="cam">
+      <div id="world" class="world">
+        <!-- 上一世：旧书房 -->
+        <div class="set set-study" data-set="study">
+          <img class="bg" src="assets/bg-study.webp" alt="" draggable="false">
+          <button class="poster" data-poster="1" style="left:19%;top:26.6%;width:22.4%;height:22%" aria-label="告示：七日速成">
+            <span class="poster-big">速成</span><span class="poster-small">七日包会</span><i class="stamp">弯路</i>
+          </button>
+          <button class="poster" data-poster="2" style="left:44%;top:25.8%;width:24.3%;height:22.6%" aria-label="告示：押题答案">
+            <span class="poster-big">押题</span><span class="poster-small">考前必中</span><i class="stamp">弯路</i>
+          </button>
+          <button class="poster" data-poster="3" style="left:71.1%;top:25.1%;width:25.1%;height:23.3%" aria-label="告示：内部通道">
+            <span class="poster-big">通道</span><span class="poster-small">内部名额</span><i class="stamp">弯路</i>
+          </button>
+          <div class="actor xm-past" id="xmPast" style="left:30%;bottom:6%;height:24%"><img src="assets/xm-orange-idle.png" alt="小马翁" draggable="false"></div>
+        </div>
+
+        <!-- 第一幕：古蜀街口 -->
+        <div class="set set-street" data-set="street">
+          <img class="bg" src="assets/bg-street.webp" alt="" draggable="false">
+          <div class="gate-glow" id="gateGlow"></div>
+          <div class="actor ww" id="ww" style="left:51.6%;bottom:34.6%;height:10.5%"><img src="assets/wenweng.webp" alt="" draggable="false"></div>
+          <button class="actor passer" id="pC" data-who="丙" style="left:69%;bottom:31%;height:21%"><img src="assets/passer-c.webp" alt="路人丙" draggable="false"></button>
+          <button class="actor passer" id="pA" data-who="甲" style="left:20%;bottom:15%;height:31%"><img src="assets/passer-a.webp" alt="路人甲" draggable="false"></button>
+          <button class="actor passer flip" id="pB" data-who="乙" style="left:80%;bottom:14%;height:31.5%"><img src="assets/passer-b.webp" alt="路人乙" draggable="false"></button>
+          <div class="leaves" id="leaves"></div>
+        </div>
+
+        <!-- 小马翁（街景） -->
+        <div class="actor xm" id="xm" style="left:50%;bottom:4%;height:20%">
+          <div class="xm-ghost"><img src="assets/xm-orange-idle.png" alt="" draggable="false"></div>
+          <img class="xm-still" src="assets/xm-orange-idle.png" alt="小马翁" draggable="false">
+          <div class="xm-walk" aria-hidden="true"><img src="assets/xm-orange-walk-01.png" style="--frame:0" alt=""><img src="assets/xm-orange-walk-02.png" style="--frame:1" alt=""><img src="assets/xm-orange-walk-03.png" style="--frame:2" alt=""><img src="assets/xm-orange-walk-04.png" style="--frame:3" alt=""><img src="assets/xm-orange-walk-05.png" style="--frame:4" alt=""><img src="assets/xm-orange-walk-06.png" style="--frame:5" alt=""></div>
+          <div class="xm-shadow"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="grain" aria-hidden="true"></div>
+    <div class="vignette" aria-hidden="true"></div>
+
+    <!-- 界面层 -->
+    <div id="ui" class="ui">
+      <header class="topbar" id="topbar">
+        <div class="tb-left"><span class="tb-seal">码上<br>清廉</span><span class="tb-chapter" id="chapter">序 · 上一世</span></div>
+        <div class="tb-right">
+          <button class="tb-btn" id="btnFacts" aria-label="史实与演绎说明">史</button>
+          <button class="tb-btn" id="btnSound" aria-label="声音开关">♪</button>
+        </div>
+        <div class="tb-progress"><i id="progress"></i></div>
+      </header>
+
+      <div class="hint" id="hint" hidden></div>
+      <div class="bubbles" id="bubbles"></div>
+
+      <div class="dialog" id="dialog" hidden>
+        <div class="dlg-name" id="dlgName"></div>
+        <p class="dlg-text" id="dlgText"></p>
+        <span class="dlg-next" aria-hidden="true">轻触继续 ▾</span>
+      </div>
+
+      <div class="choice" id="choice" hidden></div>
+    </div>
+
+    <!-- 封面 -->
+    <section class="cover" id="cover">
+      <div class="cover-past"></div>
+      <div class="cover-now"></div>
+      <div class="cover-tear" id="coverTear"></div>
+      <div class="cover-xm"><img src="assets/xm-orange-idle.png" alt="" draggable="false"></div>
+      <div class="cover-head">
+        <div class="cover-eyebrow">码上清廉 · 先贤小故事</div>
+        <h1 class="cover-title"><span>文</span><span>翁</span><span>新</span><span>学</span><span>录</span></h1>
+        <div class="cover-seal">文翁篇</div>
+      </div>
+      <div class="cover-foot">
+        <p class="cover-sub">上一世走尽捷径的小马翁<br>这一次，想把书读明白</p>
+        <button class="btn-primary" id="btnStart"><span>翻开这一页</span></button>
+        <p class="cover-tag">架空互动剧情｜文翁事迹依据《汉书·循吏传》</p>
+      </div>
+      <div class="loader" id="loader"><i></i></div>
+    </section>
+
+    <!-- 章节卡 -->
+    <div class="title-card" id="titleCard" hidden>
+      <div class="tc-sub" id="tcSub"></div>
+      <div class="tc-main" id="tcMain"></div>
+      <div class="tc-seal" id="tcSeal"></div>
+      <div class="tc-note" id="tcNote"></div>
+    </div>
+
+    <!-- 回忆小镜头 -->
+    <div class="shot" id="shot" hidden>
+      <div class="shot-frame" id="shotFrame"></div>
+      <p class="shot-cap" id="shotCap"></p>
+      <div class="shot-act" id="shotAct"></div>
+    </div>
+
+    <!-- 说明卡 -->
+    <div class="notice" id="notice" hidden>
+      <div class="notice-card">
+        <div class="notice-k">阅前说明</div>
+        <p>以下为<b>架空互动剧情</b>。</p>
+        <p>文翁兴学相关内容依据史料；小马翁、重生设定及人物对白为创作演绎。</p>
+      </div>
+      <button class="btn-primary btn-reboot" id="btnReboot"><span>重启求学副本</span></button>
+    </div>
+
+    <!-- 翻页转场 -->
+    <div class="page-turn" id="pageTurn" hidden><div class="pt-front"></div><div class="pt-back"></div></div>
+    <div class="flash" id="flash"></div>
+    <div class="wipe" id="wipe"></div>
+
+    <!-- 结尾卡 -->
+    <section class="endcard" id="endcard" hidden>
+      <div class="ec-k">第一幕 · 石室门前</div>
+      <h2 class="ec-title">石室门前</h2>
+      <p class="ec-line">小马翁没有急着下结论，<br>而是走到门前，准备问个明白。</p>
+      <div class="ec-next"><span>下一段</span>初见文翁</div>
+      <div class="ec-btns">
+        <button class="btn-primary" id="btnContinue"><span>继续：初见文翁 →</span></button>
+        <button class="btn-ghost" id="btnReplay"><span>重新体验</span></button>
+        <button class="btn-ghost" id="btnFacts2">史实与演绎说明</button>
+      </div>
+      <p class="ec-slogan">码上清廉，小故事悟大道理</p>
+    </section>
+
+    <!-- 史实与演绎 -->
+    <section class="facts" id="facts" hidden role="dialog" aria-label="史实与演绎说明">
+      <div class="facts-card">
+        <button class="facts-close" id="factsClose" aria-label="关闭">×</button>
+        <h3>史实与演绎</h3>
+        <p class="facts-lead">本段以项目《制作脚本与史实核对 v1》为准。</p>
+        <h4><i class="dot dot-fact"></i>有史料依据</h4>
+        <ul>
+          <li>文翁在成都兴办学官，招收所属县的子弟。</li>
+          <li>文翁曾挑选张叔等十余名郡县小吏赴京师学习（路人乙提到的“有人去京师学习”指此事，详情见后续章节）。</li>
+        </ul>
+        <p class="facts-src">出处：《汉书·循吏传》文翁段及颜师古注</p>
+        <h4><i class="dot dot-fic"></i>创作演绎</h4>
+        <ul>
+          <li>小马翁、“上一世”与重生设定。</li>
+          <li>速成班、押题答案、内部通道：现代比喻，不指文翁时代真实发生的事。</li>
+          <li>路人甲、乙、丙及其对白；小马翁的台词。</li>
+          <li>街景、门楼形制与人物外貌；“石室门前”为本作场景称呼。</li>
+        </ul>
+        <h4><i class="dot dot-no"></i>本段不采用</h4>
+        <ul>
+          <li>“学堂完全免费”“文翁是循吏第一名”等说法，核对文件未予确认，不作为史实呈现。</li>
+        </ul>
+      </div>
+    </section>
+  </div>
+
+  <aside class="desk-note" aria-hidden="true">
+    <b>文翁新学录 · 互动故事</b>
+    <span>为手机竖屏设计，约 3—5 分钟</span>
+    <span>点击画面推进 · 右上角“史”查看史实说明</span>
+  </aside>
+</div>
+<script src="app.js?v=memory2"></script>
+<script src="theatre.js?v=visualreview1"></script>
+<script src="continuation.js?v=visualreview2"></script>
+</body>
+</html>
