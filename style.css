@@ -576,6 +576,28 @@ img{-webkit-user-drag:none}
 /* 弱网下如果任一行走帧缺失，保留站立形象完成位移。 */
 .xm.walk-unavailable.walking .xm-still{opacity:1}.xm.walk-unavailable.walking .xm-walk{opacity:0}
 
+/* 后续章节保留可触达的声音控制，给史实和跳过按钮让位。 */
+.story-sound{position:absolute;z-index:50;top:calc(11px + var(--safe-t));right:12px;width:44px;height:44px;border:0;border-radius:50%;background:#f5e9d1;color:#503927;box-shadow:0 3px 12px #0004;font:18px var(--kai);display:grid;place-items:center}
+.story-sound.off{opacity:.65;text-decoration:line-through}
+.story-sound:focus-visible{outline:2px solid #7d3025;outline-offset:2px}
+.meeting-header,.next-header,.act-header{right:64px}
+
 /* 为下方对白卡预留空间，人物脚部不压在卡片下。 */
 .act[data-bg=street] .act-actor,.act[data-bg=office] .act-actor,.act[data-bg=road] .act-actor{bottom:29%}
 @media(max-height:660px){.act[data-bg=street] .act-actor,.act[data-bg=office] .act-actor,.act[data-bg=road] .act-actor{bottom:31%}}
+/* 道具在短屏上保持在人物脸部上方；碰撞反馈不改变移动轨迹。 */
+.packing-item{top:-3%;height:27%}
+.game-xm.react-good{animation:game-cheer .45s ease-out}
+.game-xm.react-bad{animation:game-wobble .42s ease-out}
+@keyframes game-cheer{50%{transform:translateX(-50%) translateY(-8px) scale(1.06)}}
+@keyframes game-wobble{30%{transform:translateX(-50%) rotate(-7deg)}65%{transform:translateX(-50%) rotate(6deg)}}
+@media(prefers-reduced-motion:reduce){.game-xm.react-good,.game-xm.react-bad{animation:none}}
+/* 对话按钮留出独立空间；短屏时小马脚部不被卡片遮住。 */
+.dialog{padding-bottom:43px}
+@media(max-height:660px){
+ body[data-step="arrive"] .stage[data-scene="street"] .xm,
+ body[data-step="choice-a"] .stage[data-scene="street"] .xm,
+ body[data-step="choice-b"] .stage[data-scene="street"] .xm{bottom:32%!important}
+ .dialog{padding-bottom:41px}
+ .dialog.narr .dlg-text{font-size:16px;line-height:1.6}
+}

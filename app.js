@@ -20,7 +20,7 @@ function anim(el,kf,o={}){
 /* —— 声音：全部由 WebAudio 合成，无外部音频文件 —— */
 const soundPreference=()=>{try{return localStorage.getItem('wx-sound')!=='off'}catch(_){return true}};
 const Snd={ctx:null,master:null,on:soundPreference(),
-  init(){if(this.ctx){this.ctx.resume&&this.ctx.resume();return}
+  init(){if(this.ctx){try{if(this.ctx.resume){const resumed=this.ctx.resume();if(resumed&&resumed.catch)resumed.catch(()=>{})}}catch(_){}return}
     const C=window.AudioContext||window.webkitAudioContext;if(!C)return;
     try{this.ctx=new C();this.master=this.ctx.createGain();this.master.gain.value=.7;this.master.connect(this.ctx.destination)}catch(_){}},
   env(node,t,a,peak,d){const g=this.ctx.createGain();g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(peak,t+a);
@@ -48,9 +48,29 @@ const Snd={ctx:null,master:null,on:soundPreference(),
       case 'flash':this.osc('sine',1318.5,t,.01,.07,1.4);this.osc('sine',1975.5,t+.04,.01,.05,1.6);this.osc('sine',659.25,t,.02,.06,1.6);break;
     }}
 };
-const btnSound=$('#btnSound');
-const syncSoundBtn=()=>btnSound.classList.toggle('off',!Snd.on);syncSoundBtn();
-btnSound.addEventListener('click',e=>{e.stopPropagation();Snd.on=!Snd.on;try{localStorage.setItem('wx-sound',Snd.on?'on':'off')}catch(_){}syncSoundBtn();Snd.init();Snd.play('tap')});
+// 音频设备或浏览器权限异常时，故事仍可继续。
+const playSoundSafely=Snd.play;
+Snd.play=function(name){try{if(this.master)return playSoundSafely.call(this,name)}catch(_){}};
+const btnSound=$('#btnSound'),storySound=$('#storySound');
+const syncSoundBtn=()=>{
+  [btnSound,storySound].filter(Boolean).forEach(b=>{b.classList.toggle('off',!Snd.on);b.setAttribute('aria-pressed',String(Snd.on));b.setAttribute('aria-label',Snd.on?'关闭声音':'开启声音')});
+  if(Snd.master)Snd.master.gain.value=Snd.on?.7:0;
+};syncSoundBtn();
+const toggleSound=e=>{e.stopPropagation();Snd.on=!Snd.on;try{localStorage.setItem('wx-sound',Snd.on?'on':'off')}catch(_){}if(Snd.on)Snd.init();syncSoundBtn();if(Snd.on)Snd.play('tap')};
+btnSound.addEventListener('click',toggleSound);if(storySound)storySound.addEventListener('click',toggleSound);
+// 后续章节由独立脚本创建；监听层的可见性，复用同一静音偏好。
+if(storySound){
+  const attach=()=>{const layer=stage.querySelector('.story-next');if(!layer)return false;
+    const update=()=>{storySound.hidden=layer.hidden};update();new MutationObserver(update).observe(layer,{attributes:true,attributeFilter:['hidden']});return true};
+  if(!attach()){const observer=new MutationObserver(()=>{if(attach())observer.disconnect()});observer.observe(stage,{childList:true})}
+}
+// 只在用户操作时发声：少量轻提示，不让背景声音打断阅读。
+stage.addEventListener('click',e=>{
+  const button=e.target.closest('.story-next button');if(!button||!Snd.on||button.matches('.game-move'))return;
+  Snd.init();
+  const cue=button.matches('.packing-item,.act-pricetag')?'pop':button.matches('.packing-done,.road-depart,.academy-scroll,.act-ledger,.meeting-book,.game-skip,[data-action="skip"]')?'page':'tap';
+  Snd.play(cue);
+},true);
 
 /* —— 世界坐标与镜头 —— */
 const IMG_W=940,IMG_H=1670;
