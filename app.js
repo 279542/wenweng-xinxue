@@ -89,6 +89,7 @@ stage.addEventListener('click',e=>{
   if(advance)advance();
 });
 const waitTap=()=>new Promise(r=>{advance=()=>{advance=null;r()}});
+$('#dialog .dlg-next').addEventListener('click',e=>{e.stopPropagation();if(advance)advance()});
 const dialog=$('#dialog'),dlgName=$('#dlgName'),dlgText=$('#dlgText');
 function say(name,text,{narr=false}={}){
   return new Promise(res=>{
@@ -190,6 +191,7 @@ async function cover(){
   await tapOn(btn);Snd.init();Snd.play('motif');
   await window.WenwengAssets.ensure('bg-study.webp');
   window.WenwengAssets.warm('bg-enrollment-v2.webp');
+  for(let i=1;i<=6;i++)window.WenwengAssets.warm(`xm-orange-walk-${String(i).padStart(2,'0')}.webp`);
   const cv=$('#cover');
   await anim(cv,[{opacity:1,transform:'scale(1)'},{opacity:0,transform:'scale(1.06)'}],{duration:900,easing:'ease-in'});
   cv.hidden=true;
@@ -352,6 +354,8 @@ function spawnLeaves(){
 async function street(){
   mark('street');spawnLeaves();
   const xm=$('#xm'),pA=$('#pA'),pB=$('#pB'),pC=$('#pC');
+  const walkFrames=[...xm.querySelectorAll('.xm-walk img')];
+  walkFrames.forEach(img=>{img.loading='eager'});
   setProgress(46);
   await camTo({s:1},1800,'cubic-bezier(.45,0,.2,1)');
   Snd.play('chime');
@@ -360,6 +364,7 @@ async function street(){
   // 先交代街景，再轻推镜头；互动前等待镜头稳定。
   await camTo({s:1.06,fx:.52,fy:.58,sy:.5},2200,'cubic-bezier(.25,.1,.25,1)');
   // 小马翁从左侧走入
+  xm.classList.toggle('walk-unavailable',!walkFrames.every(img=>img.complete&&img.naturalWidth>0));
   Object.assign(xm.style,{left:'-14%',bottom:'23%'});xm.classList.add('in','walking');
   await anim(xm,[{left:'-14%'},{left:'56%'}],{duration:2600,easing:'cubic-bezier(.25,.1,.35,1)'});
   xm.classList.remove('walking');xm.classList.add('hop');setTimeout(()=>xm.classList.remove('hop'),600);
@@ -424,7 +429,7 @@ async function street(){
     anim(pA,[{left:'20%',opacity:1},{left:'2%',opacity:.0}],{duration:900}),
     anim(pB,[{left:'80%',opacity:1},{left:'98%',opacity:0}],{duration:900}),
     anim(pC,[{left:'69%'},{left:'82%'}],{duration:900}),
-    (async()=>{xm.classList.add('walking');await anim(xm,[{left:'56%',bottom:'23%'},{left:'64%',bottom:'25%'}],{duration:900,easing:'linear'})})()
+    (async()=>{xm.classList.toggle('walk-unavailable',!walkFrames.every(img=>img.complete&&img.naturalWidth>0));xm.classList.add('walking');await anim(xm,[{left:'56%',bottom:'23%'},{left:'64%',bottom:'25%'}],{duration:900,easing:'linear'})})()
   ]);
   await gateShot();
 }

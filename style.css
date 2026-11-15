@@ -565,3 +565,17 @@ img{-webkit-user-drag:none}
 @media(max-height:660px){.story-next[data-scene="gameIntro"] .next-xm{bottom:30%;height:20%}}
 .act-world.has-speaker .act-actor:not(.speaking) .act-portrait{opacity:1}
 .meeting-scene[data-speaker="wenweng"] .meeting-xm,.meeting-scene[data-speaker="horse"] .meeting-wenweng{opacity:1}
+
+/* 继续按钮保留原有提示样式，同时支持键盘和触屏。 */
+.dlg-next{min-height:44px;min-width:80px;padding:8px;background:transparent;border:0;text-align:right;cursor:pointer;opacity:.8}
+.dlg-next:focus-visible{outline:2px solid currentColor;outline-offset:1px}
+
+/* 短屏仍能滚动阅读完整史实说明。 */
+.next-facts-card{max-height:min(85%,620px);overflow-y:auto;overscroll-behavior:contain}
+
+/* 弱网下如果任一行走帧缺失，保留站立形象完成位移。 */
+.xm.walk-unavailable.walking .xm-still{opacity:1}.xm.walk-unavailable.walking .xm-walk{opacity:0}
+
+/* 为下方对白卡预留空间，人物脚部不压在卡片下。 */
+.act[data-bg=street] .act-actor,.act[data-bg=office] .act-actor,.act[data-bg=road] .act-actor{bottom:29%}
+@media(max-height:660px){.act[data-bg=street] .act-actor,.act[data-bg=office] .act-actor,.act[data-bg=road] .act-actor{bottom:31%}}
