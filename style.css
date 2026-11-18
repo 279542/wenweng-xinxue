@@ -601,3 +601,23 @@ img{-webkit-user-drag:none}
  .dialog{padding-bottom:41px}
  .dialog.narr .dlg-text{font-size:16px;line-height:1.6}
 }
+
+
+/* 本地预览：用户提供的动态片头与制作人员图。 */
+.logo-intro{position:absolute;inset:0;z-index:100;display:grid;place-items:center;background:#f3ddba}
+.logo-intro img{width:100%;height:100%;object-fit:contain}
+.logo-intro button{position:absolute;right:14px;top:calc(14px + var(--safe-t));min-height:44px;padding:0 15px;border-radius:22px;background:#382a20ad;color:#fff9ec;font-size:13px}
+.credits-page{position:absolute;inset:0;z-index:30;display:flex;flex-direction:column;background:#efdec2}
+.credits-art{flex:1;min-height:0;display:flex;align-items:center;justify-content:center}
+.credits-art img{display:block;max-width:100%;max-height:100%;width:auto;height:auto;object-fit:contain}
+.credits-actions{flex:none;display:flex;justify-content:center;gap:12px;padding:6px 12px calc(6px + var(--safe-b));background:#f4e6cf}
+.credits-actions button{min-height:44px;padding:7px 16px;border:1px solid #b99971;border-radius:4px;color:#68412e;font-family:var(--kai);background:#fff8e9}
+.credits-actions button:first-child{background:#9e382b;color:#fff7e7;border-color:#843122}
+@media(prefers-reduced-motion:reduce){.logo-intro{display:none}}
+
+.credits-art{width:100%;overflow:auto;padding:0;border:0;cursor:zoom-in;overscroll-behavior:contain}
+.credits-art.zoomed{display:block;text-align:left;cursor:zoom-out}
+.credits-art.zoomed img{width:150%;height:auto;max-width:none;max-height:none}
+.credits-tip{flex:none;text-align:center;color:#8b6d51;font-size:11px;line-height:1.4;padding:2px 0;background:#f4e6cf}
+
+.logo-intro-loading{position:absolute;bottom:calc(14px + var(--safe-b));margin:0;padding:7px 12px;background:#422f22b8;color:#fff8eb;border-radius:16px;font-size:13px}

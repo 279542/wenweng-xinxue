@@ -49,6 +49,9 @@ async function actThree({layer,showFacts,render}){
  await fade(road);render('gameIntro');
 }
 async function actFive({layer,showFacts,render}){
+ let creditsFile='credits-final.png';
+ try{if(document.createElement('canvas').toDataURL('image/webp').startsWith('data:image/webp'))creditsFile='credits-final-lossless.webp'}catch(_){}
+ window.WenwengAssets.warm(creditsFile);
  await window.WenwengAssets.ensure('bg-road-v1.webp');window.WenwengAssets.warm('bg-classroom.webp');
  let a=create(layer,'第五幕 · 学成归来','road',['horse','scholar'],showFacts);a.el.classList.add('returning');
  await say(a,'旁白','数年后，赴京学习的蜀地小吏学成归来。');
@@ -64,7 +67,22 @@ async function actFive({layer,showFacts,render}){
  await fade(b);let end=create(layer,'结局 · 石室兴学','academy',['horse'],showFacts);end.el.classList.add('finale');
  await say(end,'《汉书·循吏传》','谨身帅先，居以廉平。',{label:'继续'});
  await say(end,'旁白','这是《汉书》对吴公、文翁等循吏的共同评价。');
- end.dialog.hidden=true;end.el.classList.add('finished');end.el.insertAdjacentHTML('beforeend',`<div class="act-final"><div class="final-seal">清风 · 育人</div><h2>石室兴学<br>廉平育人</h2><p>码上清廉，小故事悟大道理。</p><div><button type="button" data-final="again">重新体验</button><button type="button" data-final="facts">史实与演绎</button></div></div>`);end.el.querySelector('[data-final=again]').onclick=()=>location.href=location.pathname;end.el.querySelector('[data-final=facts]').onclick=showFacts;
+ end.dialog.hidden=true;end.el.classList.add('finished');
+ end.el.insertAdjacentHTML('beforeend',`<div class="act-final"><div class="final-seal">清风 · 育人</div><h2>石室兴学<br>廉平育人</h2><p>码上清廉，小故事悟大道理。</p><div><button type="button" data-final="credits">查看制作人员</button><button type="button" data-final="facts">史实与演绎</button></div></div>`);
+ end.el.querySelector('[data-final=facts]').onclick=showFacts;
+ end.el.querySelector('[data-final=credits]').onclick=async e=>{
+  const button=e.currentTarget;button.disabled=true;
+  await window.WenwengAssets.ensure(creditsFile);
+  button.disabled=false;
+  const credits=document.createElement('section');credits.className='credits-page';credits.setAttribute('aria-label','制作人员');
+  const sound=document.getElementById('storySound');if(sound)sound.hidden=true;
+  credits.innerHTML=`<button type="button" class="credits-art" aria-label="放大查看制作人员名单"><img src="assets/${creditsFile}" alt="制作人员名单：文案、UI设计、指导老师，以及成都大学文学与新闻传播学院出品"></button><div class="credits-tip">点击图片放大或还原</div><div class="credits-actions"><button type="button" data-credits="again">重新体验</button><button type="button" data-credits="facts">史实与演绎</button></div>`;
+  end.el.appendChild(credits);
+  const art=credits.querySelector('.credits-art');art.onclick=()=>{const zoom=art.classList.toggle('zoomed');art.setAttribute('aria-label',zoom?'还原制作人员名单':'放大查看制作人员名单');credits.querySelector('.credits-tip').textContent=zoom?'可上下左右滑动，点击图片还原':'点击图片放大或还原';if(zoom)art.scrollLeft=(art.scrollWidth-art.clientWidth)/2};
+  credits.querySelector('[data-credits=again]').onclick=()=>location.href=location.pathname;
+  credits.querySelector('[data-credits=facts]').onclick=showFacts;
+ };
+
 }
 window.WenwengTheatre={actTwo,actThree,actFive};
 })();

@@ -207,6 +207,7 @@ function buildCover(){
 async function cover(){
   mark('cover');buildCover();
   const btn=$('#btnStart'),ld=$('#loader');
+  if(!RM)setTimeout(()=>{if(!$('#cover').hidden)window.WenwengAssets.warm('intro-logo.gif')},1200);
   btn.disabled=false;ld.classList.add('done');
   await tapOn(btn);Snd.init();Snd.play('motif');
   await window.WenwengAssets.ensure('bg-study.webp');
@@ -215,6 +216,7 @@ async function cover(){
   const cv=$('#cover');
   await anim(cv,[{opacity:1,transform:'scale(1)'},{opacity:0,transform:'scale(1.06)'}],{duration:900,easing:'ease-in'});
   cv.hidden=true;
+  await playLogoIntro();
 }
 
 /* 回忆镜头三则 */
@@ -480,6 +482,20 @@ async function gateShot(){
 }
 
 $('#btnReplay').addEventListener('click',e=>{e.stopPropagation();location.href=location.pathname});
+
+/* 片头使用用户提供的动画；加载失败或跳过时继续进入故事。 */
+function playLogoIntro(){
+ if(RM)return Promise.resolve();
+ return new Promise(resolve=>{
+  const panel=document.createElement('section');panel.className='logo-intro';panel.setAttribute('aria-label','码上清廉片头动画');
+  panel.innerHTML='<img alt="小马翁跃入码上清廉标识"><p class="logo-intro-loading">动画正在加载…</p><button type="button">跳过片头</button>';
+  const img=panel.querySelector('img'),button=panel.querySelector('button');let timer=0,limit=0,done=false;
+  const finish=()=>{if(done)return;done=true;clearTimeout(timer);clearTimeout(limit);panel.remove();resolve()};
+  button.addEventListener('click',e=>{e.stopPropagation();finish()});
+  img.onload=()=>{panel.querySelector('.logo-intro-loading').hidden=true;clearTimeout(limit);timer=setTimeout(finish,FAST?40:2400)};
+  img.onerror=finish;stage.appendChild(panel);limit=setTimeout(finish,6000);img.src='assets/intro-logo.gif';
+ });
+}
 
 /* —— 启动 —— */
 async function main(){
